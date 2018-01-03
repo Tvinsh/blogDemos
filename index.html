@@ -4,7 +4,46 @@
 	<meta charset="UTF-8">
 	<title>Document</title>
 </head>
+<style>
+	html,body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+	}
+	h2 {
+		margin: 0;
+		padding: 0;
+	}
+	.content {
+		max-width: 750px;
+		height: 100%;
+		margin: 0 auto;
+	}
+	.title {
+		height: 90px;
+		line-height: 90px;
+		width: 100%;
+		background: #fafbfc;
+		text-align: center;
+	}
+	a {
+		display: block;
+		text-decoration: none;
+		color: #000;
+		height: 20px;
+		line-height: 20px;
+		padding: 20px 0;
+		font-size: 20px;
+	}
+	a:hover {
+		color: #dc505d;
+	}
+</style>
 <body>
-	<a href="pwa/index.html">pwa</a>
+	<h2 class="title">some demos</h2>
+	<div class="content">
+		<a href="sw/index.html">1. service worker 传递消息 demo</a>
+	</div>
 </body>
 </html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>service worker 传递消息示例</title>
+</head>
+<style>
+	html,body {
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
+	}
+	h2 {
+		margin: 0;
+		padding: 0;
+	}
+	.content {
+		max-width: 750px;
+		height: 100%;
+		margin: 0 auto;
+	}
+	.title {
+		height: 90px;
+		line-height: 90px;
+		width: 100%;
+		background: #fafbfc;
+		text-align: center;
+	}
+	a {
+		text-decoration: none;
+		color: #000;
+	}
+	a:hover {
+		color: #dc505d;
+	}
+</style>
+<body>
+	<h2 class="title">service worker传递消息示例</h2>
+	<div class="content">
+		<p>消息</p>
+	    <ul id="show" style="height:100px;">
+
+	    </ul>
+	    <input type="text" id="ipt"/>
+	    <button id="sendBtn">发送</button>
+	    <p>打开另一个页面查看信息 ---> <a href="https://2fz1.me/blogDemos/sw/index.html" target="_blank">https://2fz1.me/blogDemos/sw/index.html</a></p>
+	</div>
+<script src="./index.js"></script>
+</body>
+</html>
