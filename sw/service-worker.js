@@ -1,6 +1,7 @@
 self.addEventListener('message', function(event) {
     var promise = self.clients.matchAll()
         .then(function(clientList) {
+            console.log(clientList)
             var senderID = event.source ? event.source.id : 'unknown';
 
             if (!event.source) {
@@ -13,6 +14,7 @@ self.addEventListener('message', function(event) {
                 if (client.id === senderID) {
                     return;
                 }
+                console.log(client)
                 client.postMessage({
                     client: senderID,
                     message: event.data

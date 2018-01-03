@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>最简 pwa 示例</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="../images/favicon.ico" type="image/x-icon" />
+</head>
+<style>
+	*{box-sizing: border-box;}
+
+	body {
+		background: rgba(0,0,0,0.3);
+	}
+
+	.smile_bg {
+	    position: relative;
+	    margin: 0 auto;
+	    margin-bottom: 30px;
+	    top:10px;
+	    width: 300px;
+	    height: 300px;
+	    background-color: aqua;
+	    border-radius: 20%;
+	    border: none;
+	}
+
+	#left_eye {
+	    position: absolute;
+	    top: 70px;
+	    left: 40px;
+	    width: 80px;
+	    height: 80px;
+	    background-color: white;
+	    border: 2px solid black;
+	    border-radius: 50%;
+	}
+	#left_eye:before {
+	    position: absolute;
+	    content:"";
+	    display: block;
+	    top:0;
+	    left:0;
+	    bottom:0;
+	    right: 0;
+	    margin: auto;
+	    background-color: black;
+	    width: 30px;
+	    height: 30px;
+	    border-radius: 50%;
+	}
+
+	#right_eye {
+	    position: absolute;
+	    content: "";
+	    display: block;
+	    top: 70px;
+	    right: 40px;
+	    width: 80px;
+	    height: 80px;
+	    background-color: white;
+	    border: 2px solid black;
+	    border-radius: 50%;
+	}
+
+	#right_eye:before {
+	    position: absolute;
+	    content:"";
+	    top:0;
+	    left:0;
+	    bottom:0;
+	    right: 0;
+	    margin: auto;
+	    background-color: black;
+	    width: 30px;
+	    height: 30px;
+	    border-radius: 50%;
+	}
+
+	 .smile {
+	     position: absolute;
+	     content: "";
+	     display: block;
+	     top:190px;
+	     left:100px;
+	     border: 3px solid black;
+	     width: 100px;
+	     height: 50px;
+	     
+	}
+
+	.smileface {
+		border-radius: 0 0 50px 50px;
+		border-top: none;
+	}
+
+	.sadface {
+		border-radius: 50px 50px 0 0;
+		border-top: 3px solid black;
+		border-bottom: none;
+	}
+
+	.network-message {
+		text-align: center;
+		position: relative;
+		top: 30px;
+		width: 300px;
+		margin: 15px auto;
+		font-size: 20px;
+	}
+</style>
+<body>
+	<div class="smile_bg">
+        <div id="left_eye"></div>
+        <div id="right_eye"></div>
+        <div id="smile" class="smile smileface"></div>
+    </div>
+    <div class="network-message">
+	   	version: 1.0
+  	</div>
+  	<div class="network-message">
+	   	Network:
+	    <span id="network-status" class="">Online</span>
+  	</div>
+
+  <script type="text/javascript">
+  	var cachekeyEl = document.querySelector('#cachekey')
+    if (navigator.serviceWorker != null) {
+      navigator.serviceWorker.register('sw.js')
+      .then(function(registration) {
+        console.log('Registered events at scope: ', registration.scope);
+        navigator.serviceWorker.addEventListener('message', function (e) {
+        	if(e.data.cacheKey) {
+        		console.log('当前缓存的key为-->', e.data.cacheKey)
+        	}
+        })
+      });
+    }
+
+    fetch('./data.json')
+
+    var statusEl = document.querySelector('#network-status')
+    var smileEl = document.querySelector('#smile');
+    if (!navigator.onLine) {
+      statusEl.classList = ['is-offline']
+      smileEl.classList = ['smile sadface']
+      statusEl.innerText = 'Offline'
+    }
+  </script>
+</body>
+</html>

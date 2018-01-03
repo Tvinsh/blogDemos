@@ -1,5 +1,4 @@
 (function () {
-	console.log(11);
     if (navigator.serviceWorker) {
 
         var msgIpt = document.getElementById('ipt'),
@@ -15,8 +14,6 @@
         });
 
         sendBtn.addEventListener('click', function () {
-
-            // 鍙戦€佹暟鎹�
             navigator.serviceWorker.controller.postMessage(msgIpt.value);
             msgIpt.value = '';
         });
