@@ -5,8 +5,7 @@ var cacheStorageKey = 'pwa-test-1'
 var cacheList = [
   '/',
   "index.html",
-  "favicon.png",
-  "pwa.png"
+  "favicon.png"
 ]
 
 
