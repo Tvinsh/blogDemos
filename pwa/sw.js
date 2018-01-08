@@ -66,3 +66,23 @@ self.addEventListener('fetch', function(e) {
   )
 })
 
+// add push
+self.addEventListener("push", function(event) {
+    console.log("[Service Worker] Push Received.");
+    console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
+    let notificationData = event.data.json();
+    notificationData.requireInteraction = true;
+    const title = notificationData.title;
+    event.waitUntil(self.registration.showNotification(title, notificationData))
+});
+self.addEventListener("notificationclick", function(event) {
+    console.log("[Service Worker] Notification click Received.");
+    let notification = event.notification;
+    notification.close();
+    event.waitUntil(clients.openWindow(notification.data.url))
+});
+self.addEventListener("notificationclose", function(event) {
+    console.log("notification close");
+    console.log(JSON.stringify(event.notification))
+});
+

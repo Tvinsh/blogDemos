@@ -125,11 +125,45 @@
   	</div>
 
   <script type="text/javascript">
+
+  	function urlB64ToUint8Array(base64String) {
+	    const padding = "=".repeat((4 - base64String.length % 4) % 4);
+	    const base64 = (base64String + padding).replace(/\-/g, "+").replace(/_/g, "/");
+	    const rawData = window.atob(base64);
+	    const outputArray = new Uint8Array(rawData.length);
+	    for (let i = 0; i < rawData.length; ++i) {
+	        outputArray[i] = rawData.charCodeAt(i)
+	    }
+	    return outputArray
+	}
+
+  	function subscribeUser(swRegistration) {
+        const applicationServerPublicKey = "BBlY_5OeDkp2zl_Hx9jFxymKyK4kQKZdzoCoe0L5RqpiV2eK0t4zx-d3JPHlISZ0P1nQdSZsxuA5SRlDB0MZWLw";
+	    const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+        swRegistration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: applicationServerKey
+        }).then(function(subscription) {
+            console.log("User is subscribed:", JSON.stringify(subscription));
+        }).catch(function(err) {
+            console.log("Failed to subscribe the user: ", err)
+        })
+    }
+
   	var cachekeyEl = document.querySelector('#cachekey')
     if (navigator.serviceWorker != null) {
       navigator.serviceWorker.register('sw.js')
-      .then(function(registration) {
-        console.log('Registered events at scope: ', registration.scope);
+      .then(function(reg) {
+        console.log("register done!");
+        if (window.PushManager) {
+            reg.pushManager.getSubscription().then(subscription=>{
+                if (!subscription) {
+                    subscribeUser(reg)
+                } else {
+                    console.log("You have subscribed our notification")
+                }
+            })
+        }
         navigator.serviceWorker.addEventListener('message', function (e) {
         	if(e.data.cacheKey) {
         		console.log('当前缓存的key为-->', e.data.cacheKey)
