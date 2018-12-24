@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Event Emitter</title>
+</head>
+<style>
+	.code {
+		width: 900px;
+		margin: 0 auto;
+	}
+	.code-p {
+		background: #f2f2f2;
+		height: 50px;
+		line-height: 50px;
+		padding-left: 50px;
+	}
+</style>
+<body>
+	<div class="code">
+		<a href="js/emitter.js">查看emitter.js</a>
+		<p class="code-p">
+		on: 添加一个事件监听器，支持链式调用 emitter.on(eventName, listener)
+		</p>
+		<p class="code-p">
+		off: 删除一个事件监听器，支持链式调用 emitter.off(eventName, listener)
+		</p>
+		<p class="code-p">
+		once: 添加一个只能触发一次的事件监听器，支持链式调用 emitter.once(eventName, listener)
+		</p>
+		<p class="code-p">
+		emit: 触发事件，支持链式调用 emitter.emit(eventName, args)
+		</p>
+		<p class="code-p">
+		allOff: 删除某个事件或者所有事件 emitter.allOff(eventName)
+		</p>
+		<p class="code-p">
+		var emitter = new EventEmitter();
+		</p>
+		<p class="code-p">
+		function handleOne(a, b, c) {
+		    console.log('第一个监听函数', a, b, c)
+		}
+		</p>
+		<p class="code-p">
+		function handleSecond(a, b, c) {
+		    console.log('第二个监听函数', a, b, c)
+		}
+		</p>
+		<p class="code-p">
+		function handleThird(a, b, c) {
+		    console.log('第三个监听函数', a, b, c)
+		}
+		</p>
+		<p class="code-p">
+		emitter.on("demo", handleOne)
+		       .once("demo", handleSecond)
+		       .on("demo", handleThird);
+		</p>
+		<p class="code-p">
+		emitter.emit('demo', [1, 2, 3]);
+		// => 第一个监听函数 1 2 3
+		// => 第二个监听函数 1 2 3
+		// => 第三个监听函数 1 2 3
+		</p>
+		<p class="code-p">
+		emitter.off('demo', handleThird);
+		emitter.emit('demo', [1, 2, 3]);
+		// => 第一个监听函数 1 2 3
+		</p>
+		<p class="code-p">
+		emitter.allOff();
+		emitter.emit('demo', [1, 2, 3]);
+		// nothing
+		</p>
+	</div>
+</body>
+<script src="js/emitter.js"></script>
+</html>
