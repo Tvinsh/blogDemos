@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>avatar</title>
+</head>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<style>
+	.avatar {
+		width: 600px;
+		margin: 50px auto 0;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+	.avatar-left {
+		width: 480px;
+	}
+	.avatar-right {
+		width: 100px;
+	}
+	.avatar-left-img {
+		display: block;
+		width: 480px;
+	}
+	.avatar-big-img {
+		width: 100px;
+		height: 100px;
+		position: relative;
+    	overflow: hidden;
+	}
+	.avatar-big-img img {
+		display: block;
+		width: 100px;
+		height: 100px;
+		position: absolute;
+	}
+	.avatar-middle-img {
+	    position: relative;
+		overflow: hidden;
+		margin-top: 20px;
+		width: 80px;
+		height: 80px;
+	}
+	.avatar-middle-img img {
+		display: block;
+		width: 80px;
+		height: 80px;
+		position: absolute;
+	}
+	.avatar-small-img {
+		position: relative;
+		overflow: hidden;
+		margin-top: 20px;
+		width: 60px;
+		height: 60px;
+	}
+	.avatar-small-img img {
+		display: block;
+		width: 60px;
+		height: 60px;
+		position: absolute;
+	}
+	.avater-drag-x {
+	    position: absolute;
+	    width: 120px; height: 120px;
+	    min-height: 40px; min-width: 40px;
+	    background: url(about:blank);
+	    background: linear-gradient(to top, transparent, transparent);
+	    border: 1px solid $white;
+	    outline: 1000px solid $dark;
+	    filter: alpha(opacity=20);
+	    outline: 1000px solid rgba(0,0,0,.3);
+	    left: 0; top: 0;
+	    -ms-box-sizing: border-box;
+	    box-sizing: border-box;
+	    cursor: move;
+	}
+	.avater-drag-x > i {
+	    position: absolute;
+	    right: -1px;
+	    bottom: -1px;
+	    width: 10px;
+	    height: 10px;
+	    cursor: pointer;
+	    cursor: nwse-resize;
+	    background-color: #bf2c24;
+	}
+	:root .avater-drag-x {
+	    filter: none;
+	}
+	.avatar-crop {
+		width: 400px;
+		height: 320px;
+		margin-bottom: 20px;
+	    visibility: visible;
+	    position: relative;
+	    overflow: hidden;
+	}
+
+	.img-preview {
+		width: 600px;
+		margin: 20px auto;
+	}
+</style>
+<body>
+	<div id="avatarXCrop">
+		<div class="avatar">
+			<div class="avatar-left">
+				<div id="avatarCrop" class="avatar-crop"></div>
+			</div>
+			<div class="avatar-right">
+				<div class="avatar-big-img" id="avatarCropL">
+					<img class="avatar-left-img" alt="">
+				</div>
+				<div class="avatar-middle-img" id="avatarCropM">
+					<img class="avatar-left-img" alt="">
+				</div>
+				<div class="avatar-small-img" id="avatarCropS">
+					<img class="avatar-left-img" alt="">
+				</div>
+			</div>
+		</div>
+
+		<div class="img-preview">
+			<div>
+				left: <input type="text" id="iptCropLeft" name="left" value="0">
+			</div>
+			<div>
+				top: <input type="text" id="iptCropTop" name="top" value="0">
+			</div>
+			<div>
+				width: <input type="text" id="iptCropWidth" name="width" value="120">
+			</div>
+			<div>
+				height: <input type="text" id="iptCropHeight" name="height" value="120">
+			</div>
+		</div>		
+	</div>
+</body>
+<script>
+	 var eventCrop =  function (imgurl) {
+            // 一些元素
+            var elXCrop = $('#avatarXCrop');
+            // 拖拽主容器
+            var elCrop = $('#avatarCrop');
+            // 三个图片规格容器
+            var elCropL = $('#avatarCropL');
+            var elCropM = $('#avatarCropM');
+            var elCropS = $('#avatarCropS');
+
+             // 四个输入框
+            var elCropLeft = $('#iptCropLeft');
+            var elCropTop = $('#iptCropTop');
+            var elCropWidth = $('#iptCropWidth');
+            var elCropHeight = $('#iptCropHeight');
+
+            // 图片元素
+            var elCropImg;
+            var elCropLImg = elCropL.find('img');
+            var elCropMImg = elCropM.find('img');
+            var elCropSImg = elCropS.find('img');
+
+            // 剪裁框框
+            var elDragX;
+
+            // 尺寸规格
+            var L = 120, M = 60, S = 30;
+            // 最大容器图片显示尺寸
+            var width = 400, height = 400;
+            // 大中小图缩放比例
+            var scaleL = L / 400, scaleM = M / 400, scaleS = S / 400;
+
+            // 原始图片尺寸
+            var originWidth = 0, originHeight = 0;
+
+            // 仅菊花走起来
+            elXCrop.css('visibility', 'hidden');
+
+            var fn = {
+                value: function (el) {
+                    //el 剪裁框
+                    var data = {};
+                    data.width = el.width();
+                    data.height = el.height();
+                    data.left = el.position().left;
+                    data.top = el.position().top;
+
+
+                    // 缩放比例
+                    var scale = originWidth / width;
+
+                     // 输入框赋值
+                    elCropLeft.val(data.left * scale);
+                    elCropTop.val(data.top * scale);
+                    elCropWidth.val(data.width * scale);
+                    elCropHeight.val(data.height * scale);
+               
+                    // 大中小图预览
+                    var scaleWidth = data.width * scale;
+                    // 先计算出图片比例
+                    scaleL = L / scaleWidth;
+                    scaleM = M / scaleWidth;
+                    scaleS = S / scaleWidth;
+
+                    elCropLImg.css({
+                        width: originWidth * scaleL,
+                        height: originHeight * scaleL,
+                        left: -1 * data.left * (originWidth * scaleL / 400),
+                        top: -1 * data.top * (originWidth * scaleL / 400)
+                    });
+                    elCropMImg.css({
+                        width: originWidth * scaleM,
+                        height: originHeight * scaleM,
+                        left: -1 * data.left * (originWidth * scaleM / 400),
+                        top: -1 * data.top * (originWidth * scaleM / 400)
+                    });
+                    elCropSImg.css({
+                        width: originWidth * scaleS,
+                        height: originHeight * scaleS,
+                        left: -1 * data.left * (originWidth * scaleS / 400),
+                        top: -1 * data.top * (originWidth * scaleS / 400)
+                    });
+                },
+                // 裁剪初始化
+                crop: function () {
+                    elDragX = $('<div class="avater-drag-x"><i></i></div>').prependTo(elCrop);
+
+                    var initLeft = (elCrop.width() - 120) / 2;
+                    var initTop = (elCrop.height() - 120) / 2;
+
+                    document.storeDataDragResize = {
+                        el: elDragX,
+                        width: 120,
+                        height: 120,
+                        left: initLeft,
+                        top: initTop
+                    };
+
+                    fn.value(elDragX.css({
+                        left: initLeft,
+                        top: initTop
+                    }));
+
+                    // 事件
+                    elDragX.on({
+                        mousedown: function (event) {
+                            event = event || window.event; // 兼容 ie8
+
+                            var target = event.target;
+                            var data = document.storeDataDragResize;
+                            // 小红方块拉伸，其余位置拖拽
+                            if (target.tagName.toLowerCase() == 'i') {
+                                data.isResizeAble = true;
+                                data.isDragAble = false;
+                            } else {
+                                data.isResizeAble = false;
+                                data.isDragAble = true;
+                            }
+                            //data.el  剪裁框
+                            data.width = data.el.width();
+                            data.height = data.el.height();
+                            data.left = data.el.position().left;
+                            data.top = data.el.position().top;
+                            data.pageX = event.pageX;
+                            data.pageY = event.pageY;
+
+                            document.storeDataDragResize = data;
+                        }
+                    });
+
+                    if (!document.hasCropDragBind) {
+                        document.hasCropDragBind = true;
+
+                        $(document).on({
+                            mousedown: function (event) {
+                                event = event || window.event; // 兼容 ie8
+
+                                event.preventDefault();  // 阻止图片默认拖拽
+                                return false;
+                            },
+                            mousemove: function (event) {
+                                event = event || window.event; // 兼容 ie8
+
+                                var data = document.storeDataDragResize;
+                                if (!data || !data.el) {
+                                    return;
+                                }
+                                var el = data.el;
+                                if (data.isResizeAble || data.isDragAble) {
+                                    event.preventDefault();
+
+                                    // 水平和垂直移动大小
+                                    var moveX = event.pageX - data.pageX;
+                                    var moveY = event.pageY - data.pageY;
+
+                                    // 最大移动
+                                    var maxMove = Math.max(moveX, moveY);
+
+                                    // 边界判断
+                                    var width = data.width + maxMove;
+                                    var height = data.height + maxMove;
+                                    // 边界判断
+                                    var left = data.left + moveX;
+                                    var top = data.top + moveY;
+
+                                    // 容器尺寸
+                                    var widthCrop = elCrop.width();
+                                    var heightCrop = elCrop.height();
+
+
+
+                                    if (data.isResizeAble) {
+
+                                        // 如果不是正方形，改成正方形
+                                        if(data.width > data.height) {
+                                            data.width = data.height;
+                                        } else if(data.width < data.height) {
+                                            data.height = data.width;
+                                        }
+
+                                        // 尺寸拉伸
+                                        if (width + data.left > widthCrop) {
+                                            width = widthCrop - data.left;
+                                        }
+                                        if (height + data.top > heightCrop) {
+                                            height = heightCrop - data.top;
+                                        }
+
+                                        // 尺寸变化
+                                        el.width(width);
+                                        el.height(height);
+                                    } else if (data.isDragAble) {
+                                        // 位置变化
+                                        if (left < 0) {
+                                            left = 0;
+                                        } else if (left + data.width > widthCrop) {
+                                            left = widthCrop - data.width;
+                                        }
+
+                                        if (top < 0) {
+                                            top = 0;
+                                        } else if (top + data.height > heightCrop) {
+                                            top = heightCrop - data.height;
+                                        }
+
+                                        el.css('left', left);
+                                        el.css('top', top);
+                                    }
+                                    // 根据位置确定大中小图片预览效果
+                                    fn.value(el);
+                                }
+                            },
+                            mouseup: function () {
+
+                                document.storeDataDragResize.isResizeAble = false;
+                                document.storeDataDragResize.isDragAble = false;
+                            }
+                        });
+                    }
+                },
+                // 图片按照合适尺寸显示
+                show: function () {
+                    // 剪裁图
+                    elCrop.html('<img src="'+ imgurl +'" width="'+ width +'" height="'+ height +'">');
+                    elCropImg = elCrop.find('img');
+                    // 大中小图
+                    elCropLImg.attr('src', imgurl);
+                    elCropMImg.attr('src', imgurl);
+                    elCropSImg.attr('src', imgurl);
+                    // 显示
+                    elXCrop.css('visibility', 'visible');
+                },
+                getImgSize: function () {
+                    // elCrop.height(height).loading();
+
+                    // 图片尺寸获取
+                    var tempImg = new Image();
+                    tempImg.onload = function () {
+                        originWidth = this.width;
+                        originHeight = this.height;
+                        // 图片尺寸处理
+                        var scaleRect = originWidth / originHeight;
+                        height = width / scaleRect;
+
+                        // 容器和图片尺寸一起变化
+                        elCrop.css({
+                            height: height
+                        });
+
+                        // 老，大中小图的显示
+                        fn.show();
+                        // 初始化剪裁
+                        fn.crop();
+                    };
+                    tempImg.onerror = function () {
+                        elCrop.html('<div class="tc gray" style="line-height:'+ elCrop.height() +'px;">头像加载异常，<a href="javascript:" class="blue">点击这里</a>重试。</div>').find('a').on('click', function () {
+                            fn.getImgSize();
+                        });
+                    };
+                    tempImg.src = imgurl;
+                }
+            };
+
+            // 获得图片尺寸
+            fn.getImgSize();
+        }
+     eventCrop('https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1551271726291&di=7ff936b86733e29838b23a9b5942a0d9&imgtype=jpg&src=http%3A%2F%2Fimg0.imgtn.bdimg.com%2Fit%2Fu%3D3561388755%2C1613455736%26fm%3D214%26gp%3D0.jpg')
+</script>
+</html>
